@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CEO Consult Briefing — Jonathan Herzog</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #0a0a0a;
+    --surface: #141414;
+    --border: #1f1f1f;
+    --text: #e8e8e8;
+    --muted: #888;
+    --accent: #c9a227;
+    --accent-dim: rgba(201, 162, 39, 0.1);
+  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+  .page { max-width: 720px; margin: 0 auto; padding: 48px 24px 80px; }
+
+  .status-bar { display: inline-flex; align-items: center; gap: 8px; background: var(--accent-dim); border: 1px solid rgba(201, 162, 39, 0.25); border-radius: 100px; padding: 8px 16px; font-size: 13px; font-weight: 500; color: var(--accent); margin-bottom: 32px; animation: fadeIn 0.6s ease; }
+  .status-bar .dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  .greeting { font-family: 'DM Serif Display', serif; font-size: clamp(26px, 5vw, 36px); line-height: 1.2; margin-bottom: 20px; animation: fadeIn 0.6s ease 0.1s both; }
+
+  .steps-inline { font-size: 15px; color: var(--muted); margin-bottom: 36px; max-width: 620px; animation: fadeIn 0.6s ease 0.2s both; line-height: 1.7; }
+  .steps-inline strong { color: var(--text); }
+  .steps-inline .step-marker { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: var(--accent-dim); border: 1px solid rgba(201, 162, 39, 0.3); font-size: 11px; font-weight: 700; color: var(--accent); margin-right: 4px; vertical-align: middle; }
+
+  /* Testimonials - 2 col grid */
+  .testimonials { animation: fadeIn 0.6s ease 0.3s both; margin-bottom: 36px; }
+  .testimonials-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); font-weight: 700; margin-bottom: 16px; }
+  .testimonials-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .testimonial { display: flex; align-items: flex-start; gap: 10px; padding: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+  .testimonial-img { width: 36px; height: 36px; min-width: 36px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border); margin-top: 2px; }
+  .testimonial-quote { font-size: 13px; color: var(--text); font-style: italic; line-height: 1.5; }
+  .testimonial-quote .name { font-style: normal; color: var(--muted); font-size: 11px; display: block; margin-top: 3px; }
+
+  /* Video */
+  .video-section { animation: fadeIn 0.6s ease 0.4s both; margin-bottom: 36px; }
+  .video-label { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .video-label-text { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); font-weight: 700; }
+  .video-label-duration { font-size: 12px; color: var(--accent); font-weight: 500; }
+  .video-container { position: relative; padding: 56.25% 0 0 0; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); background: var(--surface); }
+  .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+  .progress-wrap { margin-top: 12px; }
+  .progress-bar-bg { width: 100%; height: 6px; background: var(--surface); border-radius: 3px; overflow: hidden; border: 1px solid var(--border); }
+  .progress-bar-fill { height: 100%; width: 0%; background: var(--accent); border-radius: 3px; transition: width 0.5s ease; }
+  .progress-text { display: flex; justify-content: space-between; margin-top: 6px; font-size: 12px; color: var(--muted); }
+
+  /* Warning */
+  .warning { background: rgba(201, 162, 39, 0.06); border-left: 3px solid var(--accent); padding: 16px 20px; border-radius: 0 8px 8px 0; font-size: 14px; color: var(--muted); line-height: 1.7; animation: fadeIn 0.6s ease 0.5s both; }
+  .warning strong { color: var(--text); }
+
+  /* Confirm */
+  .confirm-section { margin-top: 36px; text-align: center; animation: fadeIn 0.6s ease 0.6s both; }
+  .confirm-btn { display: inline-block; background: #333; color: #666; font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 700; padding: 16px 48px; border-radius: 100px; border: none; cursor: not-allowed; transition: all 0.4s ease; }
+  .confirm-btn.active { background: var(--accent); color: #0a0a0a; cursor: pointer; }
+  .confirm-btn.active:hover { background: #d4ad2e; transform: translateY(-1px); box-shadow: 0 8px 30px rgba(201, 162, 39, 0.25); }
+  .confirm-note { margin-top: 10px; font-size: 13px; color: #555; }
+
+  .confirmed-message { display: none; background: rgba(34, 197, 94, 0.08); border: 1px solid rgba(34, 197, 94, 0.2); border-radius: 12px; padding: 32px 24px; text-align: center; margin-top: 36px; }
+  .confirmed-message .check { font-size: 40px; margin-bottom: 12px; }
+  .confirmed-message .msg { font-size: 20px; color: #22c55e; font-weight: 700; font-family: 'DM Serif Display', serif; }
+  .confirmed-message .sub { font-size: 15px; color: var(--muted); margin-top: 8px; line-height: 1.6; }
+
+  @media (max-width: 540px) {
+    .page { padding: 32px 16px 60px; }
+    .testimonials-grid { grid-template-columns: 1fr; }
+    .testimonial-quote { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="status-bar">
+    <span class="dot"></span>
+    Your slot is being held — not yet confirmed
+  </div>
+
+  <h1 class="greeting" id="greeting">Your CEO Consult with Jonathan Herzog is almost locked in.</h1>
+
+  <div class="steps-inline">
+    To confirm your slot, listen to the <a href="#recording" style="color:var(--accent);text-decoration:none;font-weight:700;">Tier 1 CEO Cohort Kickoff</a> below — the model that recently closed <strong>$480M+ in funding</strong> and <strong>65 of the Fortune 100</strong> enterprises.<br><br>
+    <span class="step-marker">1</span> Listen to the Tier 1 recording below <span style="color:#555">(20 min on 2x speed)</span><br>
+    <span class="step-marker">2</span> Click <strong>"I've listened to it"</strong> to confirm your slot<br>
+    <span class="step-marker">3</span> Show up ready — we'll apply this material directly to your venture
+    <div style="margin-top:16px;background:rgba(201,162,39,0.06);border-left:3px solid var(--accent);padding:12px 16px;border-radius:0 8px 8px 0;font-size:13px;color:var(--muted);line-height:1.6;"><strong style="color:var(--text);">Unconfirmed slots get released to the next CEO in line.</strong> Listen to the recording and confirm — it'll be the most valuable 20 minutes you spend this week.</div>
+  </div>
+
+  <div class="testimonials">
+    <div class="testimonials-title">CEOs who used this model</div>
+    <div class="testimonials-grid">
+
+      <div class="testimonial">
+        <img class="testimonial-img" src="img/davidi.png" alt="Davidi Vortman">
+        <div class="testimonial-quote">"I closed Mayo Clinic and a $9M Johnson &amp; Johnson deal with this model."<span class="name">Davidi Vortman, CEO — UltraSight</span></div>
+      </div>
+
+      <div class="testimonial">
+        <img class="testimonial-img" src="img/vignan.png" alt="Vignan Velivela">
+        <div class="testimonial-quote">"I 5x'd revenue, closed Bloomberg, Uber, and a $130M+ Series C."<span class="name">Vignan Velivela, CEO — AtoB</span></div>
+      </div>
+
+      <div class="testimonial">
+        <img class="testimonial-img" src="img/cornelius.png" alt="Cornelius Schmidt">
+        <div class="testimonial-quote">"I closed Nike, LVMH, Founders Fund, Tesla, and SpaceX."<span class="name">Cornelius Schmidt, CEO — Zellerfeld</span></div>
+      </div>
+
+      <div class="testimonial">
+        <img class="testimonial-img" src="img/chelsie.png" alt="Chelsie Hall">
+        <div class="testimonial-quote">"I closed Microsoft, Delta, and Hulu."<span class="name">Chelsie Hall, CEO — ViralMoment</span></div>
+      </div>
+
+      <div class="testimonial">
+        <img class="testimonial-img" src="img/suman.png" alt="Suman Kanuganti">
+        <div class="testimonial-quote">"I closed NVIDIA, 5 Fortune 100 deals, and 7x'd revenue."<span class="name">Suman Kanuganti, CEO — Personal AI</span></div>
+      </div>
+
+      <div class="testimonial">
+        <img class="testimonial-img" src="img/solon.png" alt="Solon Angel">
+        <div class="testimonial-quote">"I 18x'd revenue, closed a Fortune 100 deal, and doubled fundraising."<span class="name">Solon Angel, CEO — Remitian</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="recording" class="video-section">
+    <div class="video-label">
+      <span class="video-label-text">Tier 1 CEO Cohort Kickoff</span>
+      <span class="video-label-duration">20 min on 2x speed</span>
+    </div>
+    <div class="video-container">
+      <iframe id="vimeo-player" src="https://player.vimeo.com/video/1167016172?h=6590a9ab34&badge=0&autopause=0&player_id=0&app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" title="Tier 1 CEO Cohort Kickoff"></iframe>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+      <div class="progress-text">
+        <span id="progressLabel">Listen to the Tier 1 recording to unlock confirmation</span>
+        <span id="progressPercent">0%</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="confirm-section" id="confirmSection">
+    <button class="confirm-btn" id="confirmBtn" onclick="confirmSlot()" disabled>I've listened — confirm my slot</button>
+    <div class="confirm-note" id="confirmNote">Listen to the Tier 1 recording to unlock confirmation and calendar invite</div>
+  </div>
+
+  <div class="confirmed-message" id="confirmedMessage">
+    <div class="check">✓</div>
+    <div class="msg">You're confirmed.</div>
+    <div class="sub">Your calendar invite is on its way. Come ready — we'll be building directly on what you just listened to.</div>
+  </div>
+
+</div>
+
+<script src="https://player.vimeo.com/api/player.js"></script>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const name = params.get('name');
+  const email = params.get('email');
+  const bookingUid = params.get('uid') || params.get('bookingUid');
+
+  if (name) {
+    const firstName = name.split(' ')[0];
+    document.getElementById('greeting').textContent = firstName + ', your CEO Consult with Jonathan Herzog is almost locked in.';
+  }
+
+  const iframe = document.getElementById('vimeo-player');
+  const player = new Vimeo.Player(iframe);
+  const progressFill = document.getElementById('progressFill');
+  const progressLabel = document.getElementById('progressLabel');
+  const progressPercent = document.getElementById('progressPercent');
+  const confirmBtn = document.getElementById('confirmBtn');
+  const confirmNote = document.getElementById('confirmNote');
+
+  let maxPercent = 0;
+  let videoCompleted = false;
+  let segmentsWatched = new Set();
+
+  player.on('timeupdate', function(data) {
+    const currentPercent = Math.round(data.percent * 100);
+    const segment = Math.floor(currentPercent / 5) * 5;
+    segmentsWatched.add(segment);
+    if (currentPercent > maxPercent) maxPercent = currentPercent;
+
+    const totalSegments = 20;
+    const watchedCount = segmentsWatched.size;
+    const effectivePercent = Math.min(maxPercent, Math.round((watchedCount / totalSegments) * 100));
+
+    progressFill.style.width = effectivePercent + '%';
+    progressPercent.textContent = effectivePercent + '%';
+
+    if (effectivePercent >= 90 && !videoCompleted) {
+      videoCompleted = true;
+      unlockConfirm();
+    }
+  });
+
+  player.on('ended', function() {
+    if (!videoCompleted) {
+      videoCompleted = true;
+      maxPercent = 100;
+      progressFill.style.width = '100%';
+      progressPercent.textContent = '100%';
+      unlockConfirm();
+    }
+  });
+
+  function unlockConfirm() {
+    confirmBtn.classList.add('active');
+    confirmBtn.disabled = false;
+    confirmNote.textContent = 'Your slot is ready to be confirmed';
+    confirmNote.style.color = '#888';
+    progressLabel.textContent = '✓ Tier 1 recording complete';
+    progressLabel.style.color = '#22c55e';
+  }
+
+  async function confirmSlot() {
+    if (!videoCompleted) return;
+    confirmBtn.textContent = 'Confirming...';
+    confirmBtn.disabled = true;
+
+    try {
+      const CONFIRM_ENDPOINT = 'YOUR_CONFIRM_ENDPOINT_URL';
+      
+      if (CONFIRM_ENDPOINT === 'YOUR_CONFIRM_ENDPOINT_URL') {
+        showConfirmed();
+        const WEBHOOK_URL = 'YOUR_WEBHOOK_URL';
+        if (WEBHOOK_URL !== 'YOUR_WEBHOOK_URL') {
+          fetch(WEBHOOK_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: name, email: email, bookingUid: bookingUid,
+              confirmed: true, watchedPercent: maxPercent,
+              segmentsWatched: Array.from(segmentsWatched),
+              timestamp: new Date().toISOString()
+            })
+          }).catch(() => {});
+        }
+        return;
+      }
+
+      const res = await fetch(CONFIRM_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bookingUid: bookingUid })
+      });
+
+      if (res.ok) { showConfirmed(); }
+      else { throw new Error('Confirm failed'); }
+    } catch (err) {
+      showConfirmed();
+    }
+  }
+
+  function showConfirmed() {
+    document.getElementById('confirmSection').style.display = 'none';
+    document.getElementById('confirmedMessage').style.display = 'block';
+    document.querySelector('.status-bar').innerHTML = '<span class="dot" style="background:#22c55e;animation:none;"></span> Slot confirmed';
+    document.querySelector('.status-bar').style.borderColor = 'rgba(34, 197, 94, 0.25)';
+    document.querySelector('.status-bar').style.background = 'rgba(34, 197, 94, 0.1)';
+    document.querySelector('.status-bar').style.color = '#22c55e';
+  }
+</script>
+
+</body>
+</html>
