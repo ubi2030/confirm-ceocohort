@@ -267,9 +267,17 @@
       });
 
       if (res.ok) { showConfirmed(); }
-      else { throw new Error('Confirm failed'); }
+      else {
+        const errBody = await res.text().catch(() => '');
+        throw new Error('HTTP ' + res.status + ': ' + errBody.slice(0, 100));
+      }
     } catch (err) {
-      showConfirmed();
+      confirmBtn.textContent = 'ERROR: ' + err.message;
+      confirmBtn.disabled = false;
+      confirmBtn.classList.add('active');
+      confirmBtn.style.background = '#c0392b';
+      confirmBtn.style.color = '#fff';
+      confirmBtn.style.fontSize = '12px';
     }
   }
 
