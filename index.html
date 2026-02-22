@@ -168,7 +168,8 @@
   const params = new URLSearchParams(window.location.search);
   const name = params.get('name');
   const email = params.get('email');
-  const bookingUid = params.get('uid') || params.get('bookingUid');
+  const rawUid = params.get('bookingUid') || params.get('uid') || params.get('booking_uid') || params.get('id');
+  const bookingUid = (rawUid && rawUid.includes('{')) ? null : rawUid;
 
   if (name) {
     const firstName = name.split(' ')[0];
