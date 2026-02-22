@@ -268,17 +268,11 @@
       });
 
       if (res.ok) { showConfirmed(); }
-      else {
-        const errBody = await res.text().catch(() => '');
-        throw new Error('HTTP ' + res.status + ': ' + errBody.slice(0, 100));
-      }
+      else { throw new Error('HTTP ' + res.status); }
     } catch (err) {
-      confirmBtn.textContent = 'ERROR: ' + err.message;
+      confirmBtn.textContent = 'Something went wrong. Please try again.';
       confirmBtn.disabled = false;
       confirmBtn.classList.add('active');
-      confirmBtn.style.background = '#c0392b';
-      confirmBtn.style.color = '#fff';
-      confirmBtn.style.fontSize = '12px';
     }
   }
 
