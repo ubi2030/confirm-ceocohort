@@ -184,13 +184,14 @@
   const confirmBtn = document.getElementById('confirmBtn');
   const confirmNote = document.getElementById('confirmNote');
 
-  let maxPercent = 0;
+  const REQUIRED_SECONDS = 2400; // 40-min video; 20 min at 2x
+  let secondsWatched = 0;
+  let lastTime = -1;
   let videoCompleted = false;
-  let segmentsWatched = new Set();
 
   // === PERSIST PROGRESS IN COOKIES ===
   function saveProgress() {
-    const data = JSON.stringify({ maxPercent, segments: Array.from(segmentsWatched), completed: videoCompleted });
+    const data = JSON.stringify({ secondsWatched, completed: videoCompleted });
     document.cookie = 'vp=' + encodeURIComponent(data) + ';max-age=259200;path=/;SameSite=Lax';
   }
   function loadProgress() {
@@ -198,47 +199,58 @@
     if (match) {
       try {
         const data = JSON.parse(decodeURIComponent(match[1]));
-        maxPercent = data.maxPercent || 0;
-        data.segments.forEach(s => segmentsWatched.add(s));
+        secondsWatched = data.secondsWatched || 0;
         videoCompleted = data.completed || false;
-        if (videoCompleted) {
-          unlockConfirm();
-        }
+        if (videoCompleted) unlockConfirm();
         updateProgressUI();
       } catch(e) {}
     }
   }
   function updateProgressUI() {
-    const totalSegments = 20;
-    const watchedCount = segmentsWatched.size;
-    const effectivePercent = Math.min(maxPercent, Math.round((watchedCount / totalSegments) * 100));
-    progressFill.style.width = effectivePercent + '%';
-    progressPercent.textContent = effectivePercent + '%';
+    const percent = Math.min(100, Math.round((secondsWatched / REQUIRED_SECONDS) * 100));
+    progressFill.style.width = percent + '%';
+    progressPercent.textContent = percent + '%';
   }
   loadProgress();
 
+  let saveCounter = 0;
+
   player.on('timeupdate', function(data) {
-    const currentPercent = Math.round(data.percent * 100);
-    const segment = Math.floor(currentPercent / 5) * 5;
-    segmentsWatched.add(segment);
-    if (currentPercent > maxPercent) maxPercent = currentPercent;
-
-    updateProgressUI();
-
-    const watchedCount = segmentsWatched.size;
-    const effectivePercent = Math.round((watchedCount / 20) * 100);
-    if (effectivePercent >= 90 && !videoCompleted) {
-      videoCompleted = true;
-      unlockConfirm();
+    const currentTime = data.seconds;
+    if (lastTime >= 0) {
+      const delta = currentTime - lastTime;
+      // Count only small forward increments (normal playback up to 2x speed)
+      if (delta > 0 && delta <= 4) {
+        secondsWatched += delta;
+        updateProgressUI();
+        saveCounter++;
+        if (saveCounter % 20 === 0) saveProgress();
+        if (secondsWatched >= REQUIRED_SECONDS && !videoCompleted) {
+          videoCompleted = true;
+          unlockConfirm();
+          saveProgress();
+        }
+      }
+      // Skips (delta > 4 or negative) are ignored
     }
-    saveProgress();
+    lastTime = currentTime;
   });
 
+  // Reset lastTime on seek so the first tick after a skip doesn't count
+  player.on('seeked', function(data) {
+    lastTime = data.seconds;
+  });
+
+  player.on('play', function() {
+    player.getCurrentTime().then(function(t) { lastTime = t; });
+  });
+
+  player.on('pause', function() { saveProgress(); });
+
   player.on('ended', function() {
-    if (!videoCompleted) {
+    saveProgress();
+    if (!videoCompleted && secondsWatched >= REQUIRED_SECONDS) {
       videoCompleted = true;
-      maxPercent = 100;
-      updateProgressUI();
       unlockConfirm();
       saveProgress();
     }
