@@ -109,6 +109,10 @@
   </div>
 
   <div class="confirm-section" id="confirmSection">
+    <div id="emailInputWrap" style="display:none; margin-bottom:16px;">
+      <input type="email" id="emailInput" placeholder="Enter the email you booked with" style="font-family:'DM Sans',sans-serif; font-size:15px; padding:14px 20px; border-radius:100px; border:1px solid var(--border); background:var(--surface); color:var(--text); width:100%; max-width:400px; outline:none; text-align:center;" />
+      <p id="emailError" style="color:#ef4444; font-size:13px; margin-top:8px; display:none;"></p>
+    </div>
     <button class="confirm-btn" id="confirmBtn" onclick="confirmSlot()" disabled>I've listened — confirm my slot</button>
     <div class="confirm-note" id="confirmNote">Listen to the Tier 1 recording to unlock confirmation and calendar invite</div>
   </div>
@@ -167,9 +171,13 @@
 <script>
   const params = new URLSearchParams(window.location.search);
   const name = params.get('name');
-  const email = params.get('email');
+  let email = params.get('email');
   const rawUid = params.get('bookingUid') || params.get('uid') || params.get('booking_uid') || params.get('id');
   const bookingUid = (rawUid && rawUid.includes('{')) ? null : rawUid;
+
+  if (!bookingUid) {
+    document.getElementById('emailInputWrap').style.display = 'block';
+  }
 
   if (name) {
     const firstName = name.split(' ')[0];
@@ -267,6 +275,17 @@
 
   async function confirmSlot() {
     if (!videoCompleted) return;
+
+    if (!bookingUid) {
+      email = document.getElementById('emailInput').value.trim();
+      if (!email) {
+        document.getElementById('emailError').textContent = 'Enter the email you booked with to confirm.';
+        document.getElementById('emailError').style.display = 'block';
+        return;
+      }
+      document.getElementById('emailError').style.display = 'none';
+    }
+
     confirmBtn.textContent = 'Confirming...';
     confirmBtn.disabled = true;
 
@@ -276,10 +295,17 @@
       const res = await fetch(CONFIRM_ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify({ bookingUid: bookingUid })
+        body: JSON.stringify({ bookingUid: bookingUid, email: email })
       });
 
       if (res.ok) { showConfirmed(); }
+      else if (res.status === 404) {
+        document.getElementById('emailError').textContent = 'No pending booking found for this email — try the email you used to book.';
+        document.getElementById('emailError').style.display = 'block';
+        confirmBtn.textContent = 'I\'ve listened — confirm my slot';
+        confirmBtn.disabled = false;
+        confirmBtn.classList.add('active');
+      }
       else { throw new Error('HTTP ' + res.status); }
     } catch (err) {
       confirmBtn.textContent = 'Something went wrong. Please try again.';
