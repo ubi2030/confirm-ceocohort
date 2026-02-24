@@ -44,7 +44,7 @@
   .video-label { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
   .video-label-text { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); font-weight: 700; }
   .video-label-duration { font-size: 12px; color: var(--accent); font-weight: 500; }
-  .video-container { position: relative; padding: 28% 0 0 0; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); background: var(--surface); }
+  .video-container { position: relative; padding: 45% 0 0 0; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); background: var(--surface); }
   .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 
   .progress-wrap { margin-top: 12px; }
@@ -73,86 +73,22 @@
     .testimonials-grid { grid-template-columns: 1fr; }
     .testimonial-quote { font-size: 12px; }
   }
-
-  /* Urgency bar */
-  .urgency-bar {
-    background: rgba(224,92,77,0.08);
-    border-bottom: 1px solid rgba(224,92,77,0.15);
-    padding: 10px 20px;
-    text-align: center;
-    font-size: 13px;
-    font-weight: 500;
-    color: #E05C4D;
-    letter-spacing: 0.02em;
-    animation: pulse-bar 3s ease-in-out infinite;
-  }
-  .urgency-bar .dot {
-    display: inline-block;
-    width: 6px; height: 6px;
-    background: #E05C4D;
-    border-radius: 50%;
-    margin-right: 8px;
-    vertical-align: middle;
-    animation: blink 1.5s ease-in-out infinite;
-  }
-  @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
-  }
-  @keyframes pulse-bar {
-    0%, 100% { background: rgba(224,92,77,0.08); }
-    50% { background: rgba(224,92,77,0.12); }
-  }
-
-  /* Header */
-  .header {
-    text-align: center;
-    margin-bottom: 36px;
-  }
-  .header .label {
-    display: inline-block;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: #E8C547;
-    background: rgba(232,197,71,0.15);
-    padding: 6px 14px;
-    border-radius: 100px;
-    margin-bottom: 20px;
-  }
-  .header h1 {
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(26px, 5vw, 34px);
-    font-weight: 400;
-    line-height: 1.25;
-    color: #F0EDE6;
-    margin-bottom: 14px;
-  }
-  .header h1 span {
-    color: #E8C547;
-  }
-  .header p {
-    font-size: 15px;
-    color: #F0EDE6;
-    line-height: 1.6;
-    max-width: 480px;
-    margin: 0 auto;
-  }
 </style>
 </head>
 <body>
 
-<div class="urgency-bar">
-  <span class="dot"></span>Your slot is still pending — unconfirmed slots are released within 24 hours
-</div>
-
 <div class="page">
 
-  <div class="header">
-    <div class="label">CEO Consult Briefing</div>
-    <h1>Listen & confirm to <span>lock in your slot</span></h1>
-    <p>To receive your GCal invite, listen to the Tier 1 CEO Cohort Kickoff — the model that recently closed $480M+ in funding and 65 of the Fortune 100 enterprises — it'll be the most valuable 20 minutes of your week.</p>
+  <div class="status-bar">
+    <span class="dot"></span>
+    Your slot is being held — not yet confirmed
+  </div>
+
+  <h1 class="greeting" id="greeting">Your CEO Consult with Jonathan Herzog is almost locked in.</h1>
+
+  <div class="steps-inline">
+    To confirm your slot, listen to the <a href="#recording" style="color:var(--accent);text-decoration:none;font-weight:700;">Tier 1 CEO Cohort Kickoff</a> below — the model that recently closed <strong>$480M+ in funding</strong> and <strong>65 of the Fortune 100</strong> enterprises.
+    <div style="margin-top:16px;background:rgba(201,162,39,0.06);border-left:3px solid var(--accent);padding:12px 16px;border-radius:0 8px 8px 0;font-size:13px;color:var(--muted);line-height:1.6;"><strong style="color:var(--text);">Unconfirmed slots get released to the next CEO in line.</strong> Listen to the recording and confirm — it'll be the most valuable 20 minutes you spend this week.</div>
   </div>
 
   <div id="recording" class="video-section">
@@ -177,7 +113,7 @@
       <input type="email" id="emailInput" placeholder="Enter the email you booked with" style="font-family:'DM Sans',sans-serif; font-size:15px; padding:14px 20px; border-radius:100px; border:1px solid var(--border); background:var(--surface); color:var(--text); width:100%; max-width:400px; outline:none; text-align:center;" />
       <p id="emailError" style="color:#ef4444; font-size:13px; margin-top:8px; display:none;"></p>
     </div>
-    <button class="confirm-btn" id="confirmBtn" onclick="confirmSlot()" disabled>🔒 Listen to unlock confirmation</button>
+    <button class="confirm-btn" id="confirmBtn" onclick="confirmSlot()" disabled>I've listened — confirm my slot</button>
     <div class="confirm-note" id="confirmNote">Listen to the Tier 1 recording to unlock confirmation and calendar invite</div>
   </div>
 
@@ -331,7 +267,6 @@
   function unlockConfirm() {
     confirmBtn.classList.add('active');
     confirmBtn.disabled = false;
-    confirmBtn.textContent = 'I\'ve listened — confirm my slot';
     confirmNote.textContent = 'Your slot is ready to be confirmed';
     confirmNote.style.color = '#888';
     progressLabel.textContent = '✓ Tier 1 recording complete';
@@ -382,7 +317,10 @@
   function showConfirmed() {
     document.getElementById('confirmSection').style.display = 'none';
     document.getElementById('confirmedMessage').style.display = 'block';
-    document.querySelector('.urgency-bar').style.display = 'none';
+    document.querySelector('.status-bar').innerHTML = '<span class="dot" style="background:#22c55e;animation:none;"></span> Slot confirmed';
+    document.querySelector('.status-bar').style.borderColor = 'rgba(34, 197, 94, 0.25)';
+    document.querySelector('.status-bar').style.background = 'rgba(34, 197, 94, 0.1)';
+    document.querySelector('.status-bar').style.color = '#22c55e';
   }
 </script>
 
